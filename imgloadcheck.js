@@ -8,7 +8,14 @@ function checkonerror(){
 	//}	
 }
 
-function checkimgloadinginfo(obj,url,durl){
+function checkimgloadinginfo(obj,url,durl,options){
+ var defaultSetting={ 
+    getbigimg:'2', //是否获取大图
+    checkbigimg:'2',//是否检测配置大图
+	getbigimgfunc:'getbigimg'//获取大图地址规则的function 
+  }
+	
+	options = $.extend(defaultSetting,options);
 var imgloader= new window.Image();
   // <!--  当图片成功加载到浏览器缓存  -->
   imgloader.onload =function(evt)  
@@ -23,12 +30,18 @@ var imgloader= new window.Image();
   { 
     obj.attr("hasload","6");
 	obj.attr("src",url);
-	if(obj.attr("tobig")=="1"){
-		obj.parent().attr("href",obj.attr("rsrc"));
-		obj.parent().attr("href","javascript:;");
-		obj.attr("href",getbigimg(obj.attr("rsrc")));			
-		obj.parent().addClass("showimga11");	
-		obj.attr("tobig","2");					
+	if(options.checkbigimg=='2' && options.getbigimg=='2'){
+		if(obj.attr("tobig")=="1"){
+			obj.parent().attr("href",obj.attr("rsrc"));
+			obj.parent().attr("href","javascript:;");
+			if($.isFunction(options.getbigimgfunc)){
+				obj.attr("href",options.getbigimgfunc(obj.attr("rsrc")));
+			}else{
+				obj.attr("href",getbigimg(obj.attr("rsrc")));
+			}		
+			obj.parent().addClass("showimga11");	
+			obj.attr("tobig","2");					
+		}
 	}
   }else{
     imgloader.onreadystatechange(evt);
@@ -47,12 +60,18 @@ imgloader.onerror = function(evt)
 	if(imgloader.readyState=='complete'||imgloader.readyState=="loaded"||imgloader.readyState=="4"){
 			obj.attr("hasload","6");
 			obj.attr("src",url);
-			if(obj.attr("tobig")=="1"){
-				obj.parent().attr("href",obj.attr("rsrc"));
-				obj.parent().attr("href","javascript:;");
-				obj.attr("href",getbigimg(obj.attr("rsrc")));			
-				obj.parent().addClass("showimga11");	
-				obj.attr("tobig","2");					
+			if(options.checkbigimg=='2' && options.getbigimg=='2'){
+				if(obj.attr("tobig")=="1"){
+					obj.parent().attr("href",obj.attr("rsrc"));
+					obj.parent().attr("href","javascript:;");
+					if($.isFunction(options.getbigimgfunc)){
+						obj.attr("href",options.getbigimgfunc(obj.attr("rsrc")));
+					}else{
+						obj.attr("href",getbigimg(obj.attr("rsrc")));
+					}					
+					obj.parent().addClass("showimga11");	
+					obj.attr("tobig","2");					
+				}
 			}
 	}else{
 		obj.attr("hasload","0.3");
@@ -73,23 +92,57 @@ function getbigimg(str){
 		return newstr1;
 }
 
-function imgcheck(obj,url,durl){
-		checkimgloadinginfo(obj,url,durl);
+function imgcheck(obj,url,durl,options){
+		checkimgloadinginfo(obj,url,durl,options);
 }
-function checkallimgload(){
+function checkallimgload(options){
+	
+	/*function example(setting){ 
+  var defaultSetting={ 
+    name:'小红', 
+    age:'30', 
+    sex:'女', 
+    phone:'100866', 
+    QQ:'100866', 
+    birthday:'1949.10.01'
+  }; 
+  $.extend(defaultSetting,settings); 
+  var message='姓名：'+defaultSetting.name 
+  +'，性别：'+defaultSetting.sex 
+  +'，年龄：'+defaultSetting.age 
+  +'，电话：'+defaultSetting.phone 
+  +'，QQ：'+defaultSetting.QQ 
+  +'，生日：'+defaultSetting.birthday 
+  +'。'; 
+  alert(message); 
+} 
+*/
+ var defaultSetting={ 
+    getbigimg:'2', //是否获取大图
+    checkbigimg:'2',//是否检测配置大图
+	getbigimgfunc:'getbigimg'//获取大图地址规则的function 
+  }
+	
+	options = $.extend(defaultSetting,options);
 	$(".doerrorimg").each(function(i){		
 					if($(this).attr("hasload")<1 || typeof($(this).attr("hasload"))=="undefined"){
 						if(!$(this).attr("rsrc") || typeof($(this).attr("rsrc"))=="undefined"){								
 								$(this).attr("hasload","3");
 						}else{
-							if(imgcheck($(this),$(this).attr("rsrc"),$(this).attr("dsrc"))){									
+							if(imgcheck($(this),$(this).attr("rsrc"),$(this).attr("dsrc")),options){									
 									$(this).attr("src",$(this).attr("rsrc"));
+								if(options.checkbigimg=='2' && options.getbigimg=='2'){
 									if($(this).attr("tobig")=="1"){
 										$(this).parent().attr("href","javascript:;");
-										$(this).attr("href",getbigimg($(this).attr("rsrc")));
+										if($.isFunction(options.getbigimgfunc)){
+											$(this).attr("href",options.getbigimgfunc($(this).attr("rsrc")));
+										}else{
+											$(this).attr("href",getbigimg($(this).attr("rsrc")));
+										}
 										$(this).attr("tobig","2");									
 										$(this).parent().addClass("showimga11");										
 									}
+								}
 									$(this).attr("hasload","1");	
 							};	
 						}	
