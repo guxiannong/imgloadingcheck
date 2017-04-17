@@ -120,11 +120,12 @@ function checkallimgload(options){
  var defaultSetting={ 
     getbigimg:'2', //是否获取大图
     checkbigimg:'2',//是否检测配置大图
+    checkimgclass:'doerrorimg',//是否检测配置大图
 	getbigimgfunc:'getbigimg'//获取大图地址规则的function 
   }
 	
 	options = $.extend(defaultSetting,options);
-	$(".doerrorimg").each(function(i){		
+	$("."+options.checkimgclass).each(function(i){		
 					if($(this).attr("hasload")<1 || typeof($(this).attr("hasload"))=="undefined"){
 						if(!$(this).attr("rsrc") || typeof($(this).attr("rsrc"))=="undefined"){								
 								$(this).attr("hasload","3");
